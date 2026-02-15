@@ -528,7 +528,7 @@ class AssemblerGUI(QMainWindow):
         
         file_path, _ = QFileDialog.getSaveFileName(
             self, "Save Machine Code", "", 
-            "Binary Files (*.bin);;Hex Files (*.hex);;All Files (*)"
+            "Binary Files (*.bin);;Hex Files (*.hex);;Mem Files (*.mem);;All Files (*)"
         )
         
         if file_path:
@@ -536,6 +536,8 @@ class AssemblerGUI(QMainWindow):
                 # Определяем формат по расширению
                 if file_path.lower().endswith('.hex'):
                     self._save_hex_file(file_path)
+                elif file_path.lower().endswith('.mem'):
+                    self._save_mem_file(file_path)
                 else:
                     self._save_binary_file(file_path)
                 
@@ -579,6 +581,17 @@ class AssemblerGUI(QMainWindow):
         self.output_text.append(f"\n💾 Saved hex file: {file_path}")
         self.status_bar.showMessage(f"Saved hex file: {basename(file_path)}")
     
+    def _save_mem_file(self, file_path):
+        """Сохранение в текстовом hex формате с расширением .mem"""
+        with open(file_path, 'w') as f:
+            
+            for idx, instruction in enumerate(self.last_machine_code):
+                # Формат: instruction
+                f.write(f"{instruction:08x}\n")
+        
+        self.output_text.append(f"\n💾 Saved mem file: {file_path}")
+        self.status_bar.showMessage(f"Saved mem file: {basename(file_path)}")
+    
     def show_documentation(self):
         """Показ окна документации"""
         if self.doc_window is None:
@@ -593,7 +606,7 @@ class AssemblerGUI(QMainWindow):
         QMessageBox.about(self, "About RISC-V Assembler compiler",
                          "RISC-V 32-bit Assembler\n\n"
                          "A simple assembler for RISC-V ISA\n"
-                         "with instruction documentation support.\n\n"
+                         "with instruction documentation support.\n"
                          "version 0.1")
     
     def set_dark_theme(self):
